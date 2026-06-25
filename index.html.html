@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aryan Sharma — Data Science &amp; ML</title>
+<style>
+  :root{
+    --bg:#0B0E14;
+    --surface:#11151D;
+    --surface-2:#161B25;
+    --line:#222836;
+    --text:#E7EAF0;
+    --muted:#8993A4;
+    --teal:#5EEAD4;
+    --amber:#F5A623;
+    --mono:'JetBrains Mono', 'Courier New', monospace;
+    --sans:'Space Grotesk', 'Inter', sans-serif;
+    --body:'Inter', sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  #neural-canvas{
+    position:fixed; inset:0; z-index:0; opacity:0.55;
+  }
+  #matrix-canvas{
+    position:fixed; inset:0; z-index:0; opacity:0.05; pointer-events:none;
+  }
+  .glow-orb{
+    position:fixed; width:600px;height:600px;border-radius:50%;
+    background:radial-gradient(circle, rgba(94,234,212,0.10), transparent 70%);
+    top:-200px; right:-200px; z-index:0; pointer-events:none;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(94,234,212,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(94,234,212,0.035) 1px, transparent 1px);
+    background-size:42px 42px;
+    pointer-events:none;
+    z-index:0;
+  }
+  #netCanvas{position:fixed;inset:0;z-index:0;opacity:0.55;pointer-events:none;}
+  .proj-thumb{
+    width:60px;height:60px;border-radius:8px;
+    background:var(--surface-2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .proj-thumb svg{width:34px;height:34px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;position:relative;z-index:1;}
+
+  a{color:var(--teal);text-decoration:none;}
+  ::selection{background:var(--teal);color:#0B0E14;}
+
+  /* NAV */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background:rgba(11,14,20,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .logo{font-family:var(--mono);font-weight:600;color:var(--teal);font-size:15px;letter-spacing:0.5px;}
+  .logo span{color:var(--muted);}
+  .navlinks{display:flex;gap:28px;font-family:var(--mono);font-size:13px;}
+  .navlinks a{color:var(--muted);transition:color .2s;}
+  .navlinks a:hover{color:var(--teal);}
+
+  /* HERO */
+  header.hero{
+    padding:150px 0 90px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    color:var(--amber);
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:18px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{
+    content:'';width:8px;height:8px;border-radius:50%;background:var(--amber);
+    box-shadow:0 0 0 4px rgba(245,166,35,0.15);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+  h1.title{
+    font-family:var(--sans);
+    font-weight:700;
+    font-size:clamp(38px,6vw,68px);
+    line-height:1.05;
+    letter-spacing:-1px;
+    margin-bottom:20px;
+  }
+  h1.title .grad{
+    background:linear-gradient(90deg,var(--teal),#8AF5DF);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .subhead{
+    font-size:18px;
+    color:var(--muted);
+    max-width:560px;
+    margin-bottom:34px;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:50px;
+    align-items:center;
+    margin-top:10px;
+  }
+  @media (max-width:860px){.hero-grid{grid-template-columns:1fr;}}
+
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono);
+    font-size:13px;
+    padding:12px 22px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    transition:all .2s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-primary{background:var(--teal);color:#0B0E14;border-color:var(--teal);font-weight:600;}
+  .btn-primary:hover{background:#8AF5DF;}
+  .btn-ghost{color:var(--text);}
+  .btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+
+  /* TERMINAL */
+  .terminal{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .term-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:11px 14px;
+    background:var(--surface-2);
+    border-bottom:1px solid var(--line);
+  }
+  .term-dot{width:10px;height:10px;border-radius:50%;}
+  .term-body{
+    font-family:var(--mono);
+    font-size:13.5px;
+    padding:20px;
+    min-height:230px;
+    color:#C7CEDA;
+  }
+  .term-body .c1{color:var(--teal);}
+  .term-body .c2{color:var(--amber);}
+  .term-body .c3{color:#8B98AC;}
+  .cursor{display:inline-block;width:7px;height:14px;background:var(--teal);vertical-align:middle;animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* SECTION HEAD */
+  .sec{padding:90px 0;border-top:1px solid var(--line);}
+  .sec-head{margin-bottom:46px;}
+  .sec-tag{font-family:var(--mono);color:var(--teal);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+  .sec-title{font-family:var(--sans);font-weight:700;font-size:clamp(26px,4vw,38px);letter-spacing:-0.5px;}
+
+  /* ABOUT */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  @media (max-width:860px){.about-grid{grid-template-columns:1fr;}}
+  .stat-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:22px;}
+  .stat-num{font-family:var(--mono);font-size:30px;font-weight:600;color:var(--teal);}
+  .stat-label{font-size:13px;color:var(--muted);margin-top:4px;}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;}
+  @media (max-width:600px){.stats-row{grid-template-columns:1fr;}}
+
+  /* SKILLS */
+  .skill-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:860px){.skill-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.skill-grid{grid-template-columns:1fr;}}
+  .skill-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:22px;
+    transition:transform .2s, border-color .2s;
+  }
+  .skill-card:hover{transform:translateY(-3px);border-color:var(--teal);}
+  .skill-card h4{font-family:var(--mono);font-size:14px;color:var(--amber);margin-bottom:12px;letter-spacing:0.5px;}
+  .skill-tags{display:flex;flex-wrap:wrap;gap:7px;}
+  .tag{
+    font-family:var(--mono);font-size:11.5px;color:var(--text);
+    background:var(--surface-2);border:1px solid var(--line);
+    padding:5px 9px;border-radius:5px;
+  }
+
+  /* PROJECTS */
+  .proj-list{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .proj{
+    background:var(--surface);
+    padding:30px 28px;
+    display:grid;
+    grid-template-columns:60px 1fr auto;
+    gap:24px;
+    align-items:start;
+    border-bottom:1px solid var(--line);
+    transition:background .2s;
+  }
+  .proj:last-child{border-bottom:none;}
+  .proj:hover{background:var(--surface-2);}
+  .proj-num{font-family:var(--mono);color:var(--line);font-size:26px;font-weight:600;}
+  .proj-name{font-family:var(--sans);font-weight:600;font-size:19px;margin-bottom:8px;}
+  .proj-desc{color:var(--muted);font-size:14.5px;margin-bottom:14px;max-width:560px;}
+  .proj-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px;}
+  .proj-links{display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:12.5px;white-space:nowrap;}
+  .proj-links a{display:flex;align-items:center;gap:6px;color:var(--muted);transition:color .2s;}
+  .proj-links a:hover{color:var(--teal);}
+  @media (max-width:700px){
+    .proj{grid-template-columns:1fr;gap:10px;}
+    .proj-num{font-size:20px;}
+    .proj-links{flex-direction:row;flex-wrap:wrap;}
+  }
+
+  /* EDU / CERTS */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  @media (max-width:860px){.two-col{grid-template-columns:1fr;}}
+  .item-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:16px 0;border-bottom:1px solid var(--line);
+    font-size:14.5px;
+  }
+  .item-row:last-child{border-bottom:none;}
+  .item-row .l{color:var(--text);}
+  .item-row .r{color:var(--muted);font-family:var(--mono);font-size:12.5px;}
+  .cert-link{font-family:var(--mono);font-size:11.5px;color:var(--teal);}
+
+  .badge{
+    display:inline-block;font-family:var(--mono);font-size:11px;color:var(--amber);
+    border:1px solid rgba(245,166,35,0.35);background:rgba(245,166,35,0.08);
+    padding:3px 8px;border-radius:4px;margin-top:6px;
+  }
+
+  /* CONTACT */
+  .contact-band{
+    background:linear-gradient(135deg, var(--surface), var(--surface-2));
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:60px 50px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .contact-band h2{font-family:var(--sans);font-size:clamp(26px,4vw,36px);margin-bottom:14px;}
+  .contact-band p{color:var(--muted);margin-bottom:30px;}
+  .contact-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+  footer{padding:34px 0;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px;border-top:1px solid var(--line);}
+
+  /* fade in */
+  .fade{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
+  .fade.show{opacity:1;transform:translateY(0);}
+
+  @media (prefers-reduced-motion: reduce){
+    .fade{transition:none;opacity:1;transform:none;}
+    .cursor, .eyebrow::before{animation:none;}
+  }
+</style>
+</head>
+<body>
+<canvas id="netCanvas"></canvas>
+<canvas id="matrix-canvas"></canvas>
+<div class="glow-orb"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">aryan<span>.sharma</span></div>
+    <div class="navlinks">
+      <a href="#about">about</a>
+      <a href="#skills">skills</a>
+      <a href="#projects">projects</a>
+      <a href="#education">education</a>
+      <a href="#contact">contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">open to data science / ml internships</div>
+      <h1 class="title">Aryan Sharma<br>builds <span class="grad">predictive systems</span> from raw data.</h1>
+      <p class="subhead">Data Science &amp; AI student at DAV Centenary College (MDU), Faridabad — turning messy datasets into deployed, working machine learning models.</p>
+      <div class="cta-row">
+        <a href="https://github.com/Aryan120307" class="btn btn-primary">View GitHub →</a>
+        <a href="mailto:aryansharmaa285@gmail.com" class="btn btn-ghost">Get in touch</a>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="term-dot" style="background:#FF5F57;"></div>
+        <div class="term-dot" style="background:#FEBC2E;"></div>
+        <div class="term-dot" style="background:#28C840;"></div>
+      </div>
+      <div class="term-body">
+        <div><span class="c3">$</span> <span class="c1">python</span> churn_model.py</div>
+        <div class="c3">Loading dataset... done</div>
+        <div class="c3">Training RandomForestClassifier...</div>
+        <div>Accuracy: <span class="c2">~80%</span></div>
+        <div>F1-score: <span class="c2">0.78</span></div>
+        <div class="c3">Deploying to Streamlit...</div>
+        <div><span class="c1">✓</span> live at <span class="c1">customerchurnpredictionmodel.streamlit.app</span></div>
+        <div><span class="c3">$</span> <span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="sec" id="about">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="sec-tag">01 / about</div>
+      <div class="sec-title">From spreadsheets to deployed models</div>
+    </div>
+    <div class="about-grid fade">
+      <p style="color:var(--muted);font-size:15.5px;">I'm a BCA student specializing in Data Science &amp; AI, with hands-on experience across the full ML lifecycle — EDA, feature engineering, model training, evaluation, and deployment. I work primarily in Python with Pandas, NumPy, and Scikit-learn, and I'm comfortable taking a model from a Jupyter notebook to a live Streamlit app. Alongside ML, I bring a strong statistics foundation (hypothesis testing, ANOVA, PCA/LDA) and I'm currently sharpening my DSA fundamentals on LeetCode.</p>
+      <div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-num">~80%</div><div class="stat-label">churn model accuracy</div></div>
+          <div class="stat-card"><div class="stat-num">9.21</div><div class="stat-label">SGPA</div></div>
+          <div class="stat-card"><div class="stat-num">60+</div><div class="stat-label">LeetCode problems</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="skills">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="sec-tag">02 / stack</div>
+      <div class="sec-title">Tools of the trade</div>
+    </div>
+    <div class="skill-grid fade">
+      <div class="skill-card">
+        <h4>// Machine Learning</h4>
+        <div class="skill-tags">
+          <span class="tag">Linear/Logistic Regression</span><span class="tag">Decision Tree</span><span class="tag">Random Forest</span><span class="tag">K-Means</span><span class="tag">Scikit-learn</span><span class="tag">Hyperparameter Tuning</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h4>// Data Science</h4>
+        <div class="skill-tags">
+          <span class="tag">Pandas</span><span class="tag">NumPy</span><span class="tag">Matplotlib</span><span class="tag">EDA</span><span class="tag">Feature Engineering</span><span class="tag">Encoding</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h4>// Statistics</h4>
+        <div class="skill-tags">
+          <span class="tag">PCA</span><span class="tag">LDA</span><span class="tag">Hypothesis Testing</span><span class="tag">ANOVA</span><span class="tag">Probability</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h4>// Tools &amp; Platforms</h4>
+        <div class="skill-tags">
+          <span class="tag">Git/GitHub</span><span class="tag">Streamlit</span><span class="tag">FastAPI</span><span class="tag">Power BI</span><span class="tag">Jupyter</span><span class="tag">Linux</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h4>// Database</h4>
+        <div class="skill-tags">
+          <span class="tag">SQL Server</span><span class="tag">SQL Queries</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h4>// Programming</h4>
+        <div class="skill-tags">
+          <span class="tag">Python (OOP)</span><span class="tag">DSA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="projects">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="sec-tag">03 / projects</div>
+      <div class="sec-title">Things I've built</div>
+    </div>
+    <div class="proj-list fade">
+
+      <div class="proj">
+        <div class="proj-num">01</div>
+        <div>
+          <div class="proj-name">Predictive Customer Churn Model</div>
+          <div class="proj-desc">End-to-end ML pipeline using Logistic Regression and Random Forest to predict customer churn, achieving ~80% accuracy. Deployed as a live Streamlit app for real-time predictions.</div>
+          <div class="proj-tags">
+            <span class="tag">Logistic Regression</span><span class="tag">Random Forest</span><span class="tag">Streamlit</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="https://customerchurnpredictionmodel-9ekktytwyyyrhyuz4xmfes.streamlit.app/">↗ Live demo</a>
+          <a href="https://github.com/Aryan120307/PREDICTIVE_CHURN_MODEL">↗ GitHub repo</a>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">02</div>
+        <div>
+          <div class="proj-name">T20 Match Prediction Model</div>
+          <div class="proj-desc">A machine learning system that predicts T20 cricket match outcomes using Logistic Regression on historical datasets, improving prediction consistency through feature engineering.</div>
+          <div class="proj-tags">
+            <span class="tag">Logistic Regression</span><span class="tag">Feature Engineering</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/Aryan120307">↗ GitHub repo</a>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">03</div>
+        <div>
+          <div class="proj-name">US Honey Production Analysis</div>
+          <div class="proj-desc">Cleaned and analyzed 1,100+ records to uncover production trends across US states, using correlation analysis and visualization to surface insights.</div>
+          <div class="proj-tags">
+            <span class="tag">Pandas</span><span class="tag">Seaborn</span><span class="tag">EDA</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/Aryan120307/US-Honey-Production-Analysis">↗ GitHub repo</a>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">04</div>
+        <div>
+          <div class="proj-name">Purchase Behavior Analysis</div>
+          <div class="proj-desc">Applied Z-test, T-test, and ANOVA on consumer purchase datasets to draw statistically grounded conclusions about buyer behavior.</div>
+          <div class="proj-tags">
+            <span class="tag">Z-test</span><span class="tag">T-test</span><span class="tag">ANOVA</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/Aryan120307/-Purchase-Case-Study-Mini-Project">↗ GitHub repo</a>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">05</div>
+        <div>
+          <div class="proj-name">HR Analytics — Employee Attrition</div>
+          <div class="proj-desc">Exploratory analysis of HR data to identify the key drivers behind employee attrition, supporting data-informed retention strategy.</div>
+          <div class="proj-tags">
+            <span class="tag">EDA</span><span class="tag">Data Visualization</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/Aryan120307/HR-Analytics-Employee-Attrition">↗ GitHub repo</a>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-num">06</div>
+        <div>
+          <div class="proj-name">Invoice IQ</div>
+          <div class="proj-desc">AI-powered invoice management system, built end-to-end during a 6-hour hackathon sprint.</div>
+          <div class="proj-tags">
+            <span class="tag">Hackathon Build</span><span class="tag">AI</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/Aryan120307">↗ GitHub repo</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="education">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="sec-tag">04 / credentials</div>
+      <div class="sec-title">Education &amp; certifications</div>
+    </div>
+    <div class="two-col fade">
+      <div>
+        <h4 style="font-family:var(--mono);color:var(--amber);font-size:13px;letter-spacing:1px;margin-bottom:14px;">EDUCATION</h4>
+        <div class="item-row"><span class="l">BCA, DAV Centenary College (MDU)<br><span style="color:var(--muted);font-size:13px;">SGPA 9.21</span></span><span class="r">2024–2027</span></div>
+        <h4 style="font-family:var(--mono);color:var(--amber);font-size:13px;letter-spacing:1px;margin:26px 0 14px;">ACHIEVEMENTS</h4>
+        <div class="item-row"><span class="l">3rd Prize — IMT Hackathon 2026<br><span style="color:var(--muted);font-size:13px;">₹3,100 cash prize</span></span></div>
+        <div class="item-row"><span class="l">Built Invoice IQ in a 6-hour hackathon</span></div>
+      </div>
+      <div>
+        <h4 style="font-family:var(--mono);color:var(--amber);font-size:13px;letter-spacing:1px;margin-bottom:14px;">CERTIFICATIONS</h4>
+        <div class="item-row"><span class="l">Data Science &amp; AI — IIT Roorkee</span><span class="r badge" style="margin:0;">pursuing</span></div>
+        <div class="item-row"><span class="l">SQL for Data Analysis — Intellipaat</span></div>
+        <div class="item-row"><span class="l">Python Certification — Intellipaat</span></div>
+        <div class="item-row"><span class="l">Linux Training — Intellipaat</span></div>
+        <div class="item-row"><span class="l">TCS iON Soft Skills Certification</span></div>
+        <div class="item-row"><span class="l">IMT Hackathon 2026 — 3rd Prize</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="contact">
+  <div class="wrap fade">
+    <div class="contact-band">
+      <h2>Let's build something with data.</h2>
+      <p>Open to Data Science &amp; Machine Learning internship opportunities.</p>
+      <div class="contact-row">
+        <a href="mailto:aryansharmaa285@gmail.com" class="btn btn-primary">✉ aryansharmaa285@gmail.com</a>
+        <a href="https://github.com/Aryan120307" class="btn btn-ghost">GitHub</a>
+        <a href="https://www.linkedin.com/in/aryan-sharma-4327a6321/" class="btn btn-ghost">LinkedIn</a>
+        <a href="https://leetcode.com/u/Aryan1237/" class="btn btn-ghost">LeetCode</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Faridabad, Haryana, India · +91-9311361237 · Built with curiosity &amp; caffeine</footer>
+
+<script>
+  const els = document.querySelectorAll('.fade');
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); } });
+  },{threshold:0.12});
+  els.forEach(el=>obs.observe(el));
+</script>
+
+</body>
+</html>
