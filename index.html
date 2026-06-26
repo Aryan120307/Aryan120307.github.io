@@ -171,40 +171,45 @@
   .live-card-head{font-family:var(--mono);font-size:13px;color:var(--text);text-align:left;margin-bottom:14px;letter-spacing:.3px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .live-pill{font-family:var(--mono);font-size:10.5px;color:var(--teal);border:1px solid rgba(94,234,212,.35);background:rgba(94,234,212,.07);padding:3px 9px;border-radius:20px;}
 
-  /* LARGE HEATMAP */
+  /* LARGE HEATMAP - FULL WIDTH */
+  .heatmap-container{
+    width:100%;
+    overflow-x:auto;
+    padding:16px 0;
+  }
   .heatmap{
     display:flex;
-    gap:4px;
-    overflow-x:auto;
-    padding-bottom:8px;
+    gap:5px;
     align-items:flex-start;
+    min-width:max-content;
   }
   .heatmap-col{
     display:flex;
     flex-direction:column;
-    gap:4px;
+    gap:5px;
   }
   .heatmap-cell{
-    width:14px;
-    height:14px;
-    border-radius:3px;
+    width:18px;
+    height:18px;
+    border-radius:4px;
     background:#161B25;
     border:1px solid #1E2636;
     transition:all .2s;
+    cursor:pointer;
   }
   .heatmap-cell:hover{
-    transform:scale(1.15);
-    filter:drop-shadow(0 0 8px rgba(94,234,212,0.4));
+    transform:scale(1.2);
+    filter:drop-shadow(0 0 10px rgba(94,234,212,0.6));
   }
 
-  .lc-ring-wrap{position:relative;width:160px;height:160px;margin:10px auto 24px;}
-  .lc-ring{width:160px;height:160px;}
-  #lcRingFill{transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1);}
-  .lc-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:36px;color:var(--text);}
-  .lc-bars{display:flex;flex-direction:column;gap:12px;text-align:left;}
-  .lc-bar-row{display:grid;grid-template-columns:60px 1fr 85px;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;color:var(--muted);}
-  .lc-track{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;border:1px solid var(--line);}
-  .lc-fill{height:100%;width:0%;border-radius:4px;transition:width 1.2s cubic-bezier(.2,.8,.2,1);}
+  .lc-ring-wrap{position:relative;width:180px;height:180px;margin:10px auto 24px;}
+  .lc-ring{width:180px;height:180px;}
+  #lcRingFill{transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1);}
+  .lc-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:40px;color:var(--text);}
+  .lc-bars{display:flex;flex-direction:column;gap:14px;text-align:left;}
+  .lc-bar-row{display:grid;grid-template-columns:70px 1fr 90px;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .lc-track{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;border:1px solid var(--line);}
+  .lc-fill{height:100%;width:0%;border-radius:5px;transition:width 1.4s cubic-bezier(.2,.8,.2,1);}
 
   .motto-band{
     position:relative;overflow:hidden;
@@ -278,7 +283,6 @@
   .fade.show{opacity:1;transform:translateY(0);}
   @media (prefers-reduced-motion:reduce){.fade{transition:none;opacity:1;transform:none;}.cursor,.eyebrow::before,.typewrap .cur{animation:none;}}
 
-  .updating{opacity:0.6;}
   .last-updated{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;margin-top:8px;}
 </style>
 </head>
@@ -560,24 +564,28 @@
       <div class="motto-sub">— every green square, every solved problem, one rep closer to mastery —</div>
     </div>
 
+    <!-- LARGE GITHUB HEATMAP -->
     <div class="live-stats fade" style="margin-top:26px;">
       <div class="live-card" style="grid-column:1/-1;text-align:left;">
         <div class="live-card-head">🔥 GitHub Contribution Heatmap (52 weeks) <span id="ghTotalContribs" class="live-pill">loading…</span></div>
-        <div id="ghHeatmap" class="heatmap"></div>
+        <div class="heatmap-container">
+          <div id="ghHeatmap" class="heatmap"></div>
+        </div>
         <div class="cap">Live GitHub data — updates automatically when you commit</div>
         <div class="last-updated">Last fetched: <span id="ghUpdateTime">—</span></div>
       </div>
     </div>
 
+    <!-- LEETCODE + REPO PULSE -->
     <div class="live-stats fade" style="margin-top:18px;">
       <div class="live-card">
-        <div class="live-card-head">🧠 LeetCode Progress <span id="lcUsername" class="live-pill"></span></div>
+        <div class="live-card-head">🧠 LeetCode Progress <span id="lcUsername" class="live-pill">loading…</span></div>
         <div class="lc-ring-wrap">
-          <svg viewBox="0 0 160 160" class="lc-ring" id="lcRingSvg">
-            <circle cx="80" cy="80" r="70" fill="none" stroke="#1E2636" stroke-width="14"/>
-            <circle cx="80" cy="80" r="70" fill="none" stroke="#5EEAD4" stroke-width="14"
-              stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440"
-              id="lcRingFill" transform="rotate(-90 80 80)"/>
+          <svg viewBox="0 0 180 180" class="lc-ring" id="lcRingSvg">
+            <circle cx="90" cy="90" r="80" fill="none" stroke="#1E2636" stroke-width="16"/>
+            <circle cx="90" cy="90" r="80" fill="none" stroke="#5EEAD4" stroke-width="16"
+              stroke-linecap="round" stroke-dasharray="503" stroke-dashoffset="503"
+              id="lcRingFill" transform="rotate(-90 90 90)"/>
           </svg>
           <div class="lc-ring-num" id="lcSolvedNum">—</div>
         </div>
@@ -586,7 +594,7 @@
           <div class="lc-bar-row"><span>Medium</span><div class="lc-track"><div class="lc-fill" style="background:#F5A623;width:0%" id="lcMediumFill"></div></div><span id="lcMediumVal">—</span></div>
           <div class="lc-bar-row"><span>Hard</span><div class="lc-track"><div class="lc-fill" style="background:#FF5F57;width:0%" id="lcHardFill"></div></div><span id="lcHardVal">—</span></div>
         </div>
-        <div class="cap">Live LeetCode stats — fetches your true progress</div>
+        <div class="cap">Live LeetCode stats — real data from your profile</div>
         <div class="last-updated">Last fetched: <span id="lcUpdateTime">—</span></div>
       </div>
       <div class="live-card">
@@ -811,11 +819,12 @@
         updateTimestamp('repoUpdateTime');
       }
     }catch(e){
+      console.error('GitHub repos error:', e);
       document.getElementById('repoCount').textContent='view on GitHub →';
     }
   })();
 
-  // LIVE GITHUB CONTRIBUTION HEATMAP (52 weeks)
+  // LIVE GITHUB CONTRIBUTION HEATMAP (52 weeks - LARGE)
   (async function(){
     const wrap = document.getElementById('ghHeatmap');
     const totalEl = document.getElementById('ghTotalContribs');
@@ -845,33 +854,44 @@
         wrap.appendChild(col);
       });
       updateTimestamp('ghUpdateTime');
+      console.log('✅ GitHub heatmap loaded: 52 weeks, total:', total);
     }catch(e){
+      console.error('GitHub heatmap error:', e);
       totalEl.textContent='view live on GitHub →';
       wrap.innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--muted);">heatmap unavailable — <a href="https://github.com/Aryan120307" style="color:var(--teal);">view live</a></div>';
     }
   })();
 
-  // LIVE LEETCODE DATA - REAL API INTEGRATION
+  // LIVE LEETCODE DATA - DIRECT API CONNECTION
   (async function(){
     const ringFill = document.getElementById('lcRingFill');
     const solvedNum = document.getElementById('lcSolvedNum');
     const unameEl = document.getElementById('lcUsername');
-    const CIRC = 440; // 2*PI*70
+    const CIRC = 503; // 2*PI*80
+    
     try{
-      // Using LeetCode Stats API
+      console.log('🔄 Fetching LeetCode data...');
       const res = await fetch('https://leetcode-stats-api.herokuapp.com/Aryan1237');
+      
+      if (!res.ok) {
+        throw new Error(`API returned ${res.status}`);
+      }
+      
       const lc = await res.json();
+      console.log('📊 LeetCode API Response:', lc);
       
       if(!lc || typeof lc.totalSolved !== 'number') {
-        throw new Error('API Error');
+        throw new Error('Invalid LeetCode data structure');
       }
 
-      const totalSolved = lc.totalSolved;
+      const totalSolved = lc.totalSolved || 0;
       const totalQuestions = lc.totalQuestions || 3500;
       const acceptanceRate = ((totalSolved / totalQuestions) * 100).toFixed(1);
 
-      // Update UI
-      unameEl.textContent = '@Aryan1237 (Live)';
+      console.log(`✅ Problems Solved: ${totalSolved}, Acceptance: ${acceptanceRate}%`);
+
+      // Update main stats
+      unameEl.textContent = '@Aryan1237 ✓';
       animateCount(solvedNum, totalSolved);
       animateCount(document.getElementById('lcAcceptBig'), parseFloat(acceptanceRate), '%');
       
@@ -886,32 +906,31 @@
       // Update difficulty bars
       const setBar = (fillId, valId, solved, total, color)=>{
         const f=document.getElementById(fillId), v=document.getElementById(valId);
-        v.textContent = `${solved} / ${total}`;
+        v.textContent = `${solved}/${total}`;
         const p = total ? Math.min(100, Math.round(solved/total*100)) : 0;
         requestAnimationFrame(()=>{ setTimeout(()=>{ f.style.width = p+'%'; },200); });
       };
       
-      setBar('lcEasyFill','lcEasyVal', lc.easySolved, lc.totalEasy, '#28C840');
-      setBar('lcMediumFill','lcMediumVal', lc.mediumSolved, lc.totalMedium, '#F5A623');
-      setBar('lcHardFill','lcHardVal', lc.hardSolved, lc.totalHard, '#FF5F57');
+      setBar('lcEasyFill','lcEasyVal', lc.easySolved || 0, lc.totalEasy || 0, '#28C840');
+      setBar('lcMediumFill','lcMediumVal', lc.mediumSolved || 0, lc.totalMedium || 0, '#F5A623');
+      setBar('lcHardFill','lcHardVal', lc.hardSolved || 0, lc.totalHard || 0, '#FF5F57');
       
       updateTimestamp('lcUpdateTime');
-      console.log('✅ LeetCode data loaded:', lc);
     }catch(e){
-      console.error('LeetCode fetch error:', e);
+      console.error('❌ LeetCode fetch error:', e.message);
       unameEl.textContent='@Aryan1237 (Offline)';
       solvedNum.textContent='—';
       document.getElementById('lcAcceptBig').textContent='—';
-      ringFill.style.strokeDashoffset = CIRC - (CIRC*0.3);
+      ringFill.style.strokeDashoffset = CIRC - (CIRC*0.2);
       document.getElementById('lcEasyVal').textContent='offline';
-      document.getElementById('lcMediumVal').textContent='→';
-      document.getElementById('lcHardVal').textContent='→';
+      document.getElementById('lcMediumVal').textContent='—';
+      document.getElementById('lcHardVal').textContent='—';
     }
   })();
 
   // Auto-refresh every 60 seconds
   setInterval(()=>{
-    console.log('🔄 Auto-refreshing live data...');
+    console.log('🔄 Auto-refreshing live data (60s)...');
     location.reload();
   }, 60000);
 </script>
