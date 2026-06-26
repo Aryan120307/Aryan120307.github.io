@@ -171,17 +171,39 @@
   .live-card-head{font-family:var(--mono);font-size:13px;color:var(--text);text-align:left;margin-bottom:14px;letter-spacing:.3px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .live-pill{font-family:var(--mono);font-size:10.5px;color:var(--teal);border:1px solid rgba(94,234,212,.35);background:rgba(94,234,212,.07);padding:3px 9px;border-radius:20px;}
 
-  .heatmap{display:flex;gap:3px;overflow-x:auto;padding-bottom:6px;}
-  .heatmap-col{display:flex;flex-direction:column;gap:3px;}
-  .heatmap-cell{width:11px;height:11px;border-radius:2px;background:#161B25;border:1px solid #1E2636;}
+  /* LARGE HEATMAP */
+  .heatmap{
+    display:flex;
+    gap:4px;
+    overflow-x:auto;
+    padding-bottom:8px;
+    align-items:flex-start;
+  }
+  .heatmap-col{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .heatmap-cell{
+    width:14px;
+    height:14px;
+    border-radius:3px;
+    background:#161B25;
+    border:1px solid #1E2636;
+    transition:all .2s;
+  }
+  .heatmap-cell:hover{
+    transform:scale(1.15);
+    filter:drop-shadow(0 0 8px rgba(94,234,212,0.4));
+  }
 
-  .lc-ring-wrap{position:relative;width:140px;height:140px;margin:8px auto 20px;}
-  .lc-ring{width:140px;height:140px;}
+  .lc-ring-wrap{position:relative;width:160px;height:160px;margin:10px auto 24px;}
+  .lc-ring{width:160px;height:160px;}
   #lcRingFill{transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1);}
-  .lc-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:32px;color:var(--text);}
-  .lc-bars{display:flex;flex-direction:column;gap:10px;text-align:left;}
-  .lc-bar-row{display:grid;grid-template-columns:60px 1fr 70px;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .lc-track{height:7px;background:var(--surface-2);border-radius:4px;overflow:hidden;border:1px solid var(--line);}
+  .lc-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:36px;color:var(--text);}
+  .lc-bars{display:flex;flex-direction:column;gap:12px;text-align:left;}
+  .lc-bar-row{display:grid;grid-template-columns:60px 1fr 85px;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .lc-track{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;border:1px solid var(--line);}
   .lc-fill{height:100%;width:0%;border-radius:4px;transition:width 1.2s cubic-bezier(.2,.8,.2,1);}
 
   .motto-band{
@@ -505,7 +527,7 @@
   <div class="wrap">
     <div class="sec-head fade">
       <div class="sec-tag">04 / live signal</div>
-      <div class="sec-title">GitHub &amp; LeetCode stats — real time</div>
+      <div class="sec-title">GitHub &amp; LeetCode live progress</div>
     </div>
 
     <!-- MASSIVE STATS DASHBOARD -->
@@ -540,10 +562,10 @@
 
     <div class="live-stats fade" style="margin-top:26px;">
       <div class="live-card" style="grid-column:1/-1;text-align:left;">
-        <div class="live-card-head">🔥 GitHub Contribution Heatmap <span id="ghTotalContribs" class="live-pill">loading…</span></div>
+        <div class="live-card-head">🔥 GitHub Contribution Heatmap (52 weeks) <span id="ghTotalContribs" class="live-pill">loading…</span></div>
         <div id="ghHeatmap" class="heatmap"></div>
-        <div class="cap">live — fetched from GitHub Contributions API</div>
-        <div class="last-updated">Updated: <span id="ghUpdateTime">—</span></div>
+        <div class="cap">Live GitHub data — updates automatically when you commit</div>
+        <div class="last-updated">Last fetched: <span id="ghUpdateTime">—</span></div>
       </div>
     </div>
 
@@ -551,11 +573,11 @@
       <div class="live-card">
         <div class="live-card-head">🧠 LeetCode Progress <span id="lcUsername" class="live-pill"></span></div>
         <div class="lc-ring-wrap">
-          <svg viewBox="0 0 140 140" class="lc-ring" id="lcRingSvg">
-            <circle cx="70" cy="70" r="60" fill="none" stroke="#1E2636" stroke-width="12"/>
-            <circle cx="70" cy="70" r="60" fill="none" stroke="#5EEAD4" stroke-width="12"
-              stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"
-              id="lcRingFill" transform="rotate(-90 70 70)"/>
+          <svg viewBox="0 0 160 160" class="lc-ring" id="lcRingSvg">
+            <circle cx="80" cy="80" r="70" fill="none" stroke="#1E2636" stroke-width="14"/>
+            <circle cx="80" cy="80" r="70" fill="none" stroke="#5EEAD4" stroke-width="14"
+              stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440"
+              id="lcRingFill" transform="rotate(-90 80 80)"/>
           </svg>
           <div class="lc-ring-num" id="lcSolvedNum">—</div>
         </div>
@@ -564,18 +586,18 @@
           <div class="lc-bar-row"><span>Medium</span><div class="lc-track"><div class="lc-fill" style="background:#F5A623;width:0%" id="lcMediumFill"></div></div><span id="lcMediumVal">—</span></div>
           <div class="lc-bar-row"><span>Hard</span><div class="lc-track"><div class="lc-fill" style="background:#FF5F57;width:0%" id="lcHardFill"></div></div><span id="lcHardVal">—</span></div>
         </div>
-        <div class="cap">live — fetched from leetcode.com</div>
-        <div class="last-updated">Updated: <span id="lcUpdateTime">—</span></div>
+        <div class="cap">Live LeetCode stats — fetches your true progress</div>
+        <div class="last-updated">Last fetched: <span id="lcUpdateTime">—</span></div>
       </div>
       <div class="live-card">
         <div class="live-card-head">⌁ Repository Pulse <span id="repoCount" class="live-pill">loading…</span></div>
         <div id="repoBars" class="repo-bars" style="text-align:left;"></div>
-        <div class="cap">live — fetched from GitHub REST API</div>
-        <div class="last-updated">Updated: <span id="repoUpdateTime">—</span></div>
+        <div class="cap">Live GitHub REST API — top 6 repositories by recent activity</div>
+        <div class="last-updated">Last fetched: <span id="repoUpdateTime">—</span></div>
       </div>
     </div>
 
-    <div class="live-note"><span class="dot">●</span> these panels call public APIs directly — every new commit or solved problem updates instantly. Data refreshes every 60 seconds.</div>
+    <div class="live-note"><span class="dot">●</span> All data is fetched live from public APIs. Updates refresh every 60 seconds automatically.</div>
   </div>
 </section>
 
@@ -759,7 +781,7 @@
     document.getElementById(elemId).textContent = now.toLocaleTimeString('en-IN');
   }
 
-  // live GitHub repo pulse
+  // LIVE GITHUB DATA
   (async function(){
     try{
       const repoRes = await fetch('https://api.github.com/users/Aryan120307/repos?per_page=100&sort=updated');
@@ -793,7 +815,7 @@
     }
   })();
 
-  // live GitHub contribution heatmap
+  // LIVE GITHUB CONTRIBUTION HEATMAP (52 weeks)
   (async function(){
     const wrap = document.getElementById('ghHeatmap');
     const totalEl = document.getElementById('ghTotalContribs');
@@ -802,12 +824,12 @@
       const data = await res.json();
       const days = (data && data.contributions) ? data.contributions : [];
       if(!days.length) throw new Error('no data');
-      const last = days.slice(-119);
+      const last = days.slice(-364); // 52 weeks
       const weeks = [];
       for(let i=0;i<last.length;i+=7){ weeks.push(last.slice(i,i+7)); }
       const total = last.reduce((s,d)=>s+(d.count||0),0);
       animateCount(document.getElementById('ghContribsBig'), total);
-      totalEl.textContent = total + ' contributions (~last 17 weeks)';
+      totalEl.textContent = total + ' contributions (52 weeks)';
       wrap.innerHTML='';
       const levelColor = lvl => ['#161B25','#0d3b34','#0f6b5c','#16a085','#5EEAD4'][lvl] || '#161B25';
       weeks.forEach(week=>{
@@ -829,38 +851,59 @@
     }
   })();
 
-  // live LeetCode progress
+  // LIVE LEETCODE DATA - REAL API INTEGRATION
   (async function(){
     const ringFill = document.getElementById('lcRingFill');
     const solvedNum = document.getElementById('lcSolvedNum');
     const unameEl = document.getElementById('lcUsername');
-    const CIRC = 377;
+    const CIRC = 440; // 2*PI*70
     try{
+      // Using LeetCode Stats API
       const res = await fetch('https://leetcode-stats-api.herokuapp.com/Aryan1237');
       const lc = await res.json();
-      if(!lc || typeof lc.totalSolved !== 'number') throw new Error('bad data');
-      unameEl.textContent = '@Aryan1237';
-      animateCount(solvedNum, lc.totalSolved);
-      animateCount(document.getElementById('lcAcceptBig'), Math.round((lc.totalSolved / (lc.totalQuestions || 3500)) * 100), '%');
-      const pct = Math.min(1, lc.totalSolved / (lc.totalQuestions || 3500));
-      requestAnimationFrame(()=>{ setTimeout(()=>{ ringFill.style.strokeDashoffset = CIRC - (CIRC*pct); },150); });
+      
+      if(!lc || typeof lc.totalSolved !== 'number') {
+        throw new Error('API Error');
+      }
 
+      const totalSolved = lc.totalSolved;
+      const totalQuestions = lc.totalQuestions || 3500;
+      const acceptanceRate = ((totalSolved / totalQuestions) * 100).toFixed(1);
+
+      // Update UI
+      unameEl.textContent = '@Aryan1237 (Live)';
+      animateCount(solvedNum, totalSolved);
+      animateCount(document.getElementById('lcAcceptBig'), parseFloat(acceptanceRate), '%');
+      
+      // Update ring
+      const pct = Math.min(1, totalSolved / totalQuestions);
+      requestAnimationFrame(()=>{ 
+        setTimeout(()=>{ 
+          ringFill.style.strokeDashoffset = CIRC - (CIRC*pct); 
+        }, 150); 
+      });
+
+      // Update difficulty bars
       const setBar = (fillId, valId, solved, total, color)=>{
         const f=document.getElementById(fillId), v=document.getElementById(valId);
         v.textContent = `${solved} / ${total}`;
         const p = total ? Math.min(100, Math.round(solved/total*100)) : 0;
         requestAnimationFrame(()=>{ setTimeout(()=>{ f.style.width = p+'%'; },200); });
       };
+      
       setBar('lcEasyFill','lcEasyVal', lc.easySolved, lc.totalEasy, '#28C840');
       setBar('lcMediumFill','lcMediumVal', lc.mediumSolved, lc.totalMedium, '#F5A623');
       setBar('lcHardFill','lcHardVal', lc.hardSolved, lc.totalHard, '#FF5F57');
+      
       updateTimestamp('lcUpdateTime');
+      console.log('✅ LeetCode data loaded:', lc);
     }catch(e){
-      unameEl.textContent='@Aryan1237';
-      solvedNum.textContent='60+';
+      console.error('LeetCode fetch error:', e);
+      unameEl.textContent='@Aryan1237 (Offline)';
+      solvedNum.textContent='—';
       document.getElementById('lcAcceptBig').textContent='—';
-      ringFill.style.strokeDashoffset = CIRC - (CIRC*0.45);
-      document.getElementById('lcEasyVal').textContent='view on LeetCode';
+      ringFill.style.strokeDashoffset = CIRC - (CIRC*0.3);
+      document.getElementById('lcEasyVal').textContent='offline';
       document.getElementById('lcMediumVal').textContent='→';
       document.getElementById('lcHardVal').textContent='→';
     }
@@ -868,7 +911,7 @@
 
   // Auto-refresh every 60 seconds
   setInterval(()=>{
-    console.log('Auto-refreshing live data...');
+    console.log('🔄 Auto-refreshing live data...');
     location.reload();
   }, 60000);
 </script>
