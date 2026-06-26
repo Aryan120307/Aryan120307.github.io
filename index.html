@@ -859,109 +859,78 @@
   })();
 
  // LIVE LEETCODE DATA - DIRECT API CONNECTION
-(async function () {
-  const ringFill = document.getElementById('lcRingFill');
-  const solvedNum = document.getElementById('lcSolvedNum');
-  const unameEl = document.getElementById('lcUsername');
-  const CIRC = 503; // 2*PI*80
+ // LIVE LEETCODE DATA - DIRECT API CONNECTION
+  (async function(){
+    const ringFill = document.getElementById('lcRingFill');
+    const solvedNum = document.getElementById('lcSolvedNum');
+    const unameEl = document.getElementById('lcUsername');
+    const CIRC = 503; // 2*PI*80
+    
+    try{
+      console.log('🔄 Fetching LeetCode data...');
+      const res = await fetch('https://leetcode-stats-api.herokuapp.com/Aryan1237');
+      
+      if (!res.ok) {
+        throw new Error(`API returned ${res.status}`);
+      }
+      
+      const lc = await res.json();
+      console.log('📊 LeetCode API Response:', lc);
+      
+      if(!lc || typeof lc.totalSolved !== 'number') {
+        throw new Error('Invalid LeetCode data structure');
+      }
 
-  try {
-    console.log('🔄 Fetching LeetCode data...');
-    const res = await fetch('https://leetcode-stats-api.herokuapp.com/Aryan1237');
+      const totalSolved = lc.totalSolved || 0;
+      const totalQuestions = lc.totalQuestions || 3500;
+      const acceptanceRate = ((totalSolved / totalQuestions) * 100).toFixed(1);
 
-    if (!res.ok) {
-      throw new Error(`API returned ${res.status}`);
-    }
+      console.log(`✅ Problems Solved: ${totalSolved}, Acceptance: ${acceptanceRate}%`);
 
-    const lc = await res.json();
-    console.log('📊 LeetCode API Response:', lc);
-
-    if (!lc || typeof lc.totalSolved !== 'number') {
-      throw new Error('Invalid LeetCode data structure');
-    }
-
-    const totalSolved = lc.totalSolved || 0;
-    const totalQuestions = lc.totalQuestions || 3500;
-    const acceptanceRate = ((totalSolved / totalQuestions) * 100).toFixed(1);
-
-    console.log(`✅ Problems Solved: ${totalSolved}, Acceptance: ${acceptanceRate}%`);
-
-    // ==========================
-    // Update Main Stats
-    // ==========================
-    unameEl.textContent = '@Aryan1237 ✓';
-
-    animateCount(solvedNum, totalSolved);
-
-    // ⭐ ADDED THIS LINE
-    animateCount(document.getElementById('lcTotalBig'), totalSolved);
-
-    animateCount(
-      document.getElementById('lcAcceptBig'),
-      parseFloat(acceptanceRate),
-      '%'
-    );
-
-    // ==========================
-    // Update Progress Ring
-    // ==========================
-    const pct = Math.min(1, totalSolved / totalQuestions);
-
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        ringFill.style.strokeDashoffset = CIRC - CIRC * pct;
-      }, 150);
-    });
-
-    // ==========================
-    // Update Difficulty Bars
-    // ==========================
-    const setBar = (fillId, valId, solved, total) => {
-      const f = document.getElementById(fillId);
-      const v = document.getElementById(valId);
-
-      v.textContent = `${solved}/${total}`;
-
-      const p = total
-        ? Math.min(100, Math.round((solved / total) * 100))
-        : 0;
-
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          f.style.width = p + '%';
-        }, 200);
+      // Update main stats
+      unameEl.textContent = '@Aryan1237 ✓';
+      animateCount(solvedNum, totalSolved);
+      animateCount(document.getElementById('lcAcceptBig'), parseFloat(acceptanceRate), '%');
+      
+      // Update ring
+      const pct = Math.min(1, totalSolved / totalQuestions);
+      requestAnimationFrame(()=>{ 
+        setTimeout(()=>{ 
+          ringFill.style.strokeDashoffset = CIRC - (CIRC*pct); 
+        }, 150); 
       });
-    };
 
-    setBar('lcEasyFill', 'lcEasyVal', lc.easySolved || 0, lc.totalEasy || 0);
-    setBar('lcMediumFill', 'lcMediumVal', lc.mediumSolved || 0, lc.totalMedium || 0);
-    setBar('lcHardFill', 'lcHardVal', lc.hardSolved || 0, lc.totalHard || 0);
+      // Update difficulty bars
+      const setBar = (fillId, valId, solved, total, color)=>{
+        const f=document.getElementById(fillId), v=document.getElementById(valId);
+        v.textContent = `${solved}/${total}`;
+        const p = total ? Math.min(100, Math.round(solved/total*100)) : 0;
+        requestAnimationFrame(()=>{ setTimeout(()=>{ f.style.width = p+'%'; },200); });
+      };
+      
+      setBar('lcEasyFill','lcEasyVal', lc.easySolved || 0, lc.totalEasy || 0, '#28C840');
+      setBar('lcMediumFill','lcMediumVal', lc.mediumSolved || 0, lc.totalMedium || 0, '#F5A623');
+      setBar('lcHardFill','lcHardVal', lc.hardSolved || 0, lc.totalHard || 0, '#FF5F57');
+      
+      updateTimestamp('lcUpdateTime');
+    }catch(e){
+      console.error('❌ LeetCode fetch error:', e.message);
+      unameEl.textContent='@Aryan1237 (Offline)';
+      solvedNum.textContent='—';
+      document.getElementById('lcAcceptBig').textContent='—';
+      ringFill.style.strokeDashoffset = CIRC - (CIRC*0.2);
+      document.getElementById('lcEasyVal').textContent='offline';
+      document.getElementById('lcMediumVal').textContent='—';
+      document.getElementById('lcHardVal').textContent='—';
+    }
+  })();
 
-    updateTimestamp('lcUpdateTime');
+  // Auto-refresh every 60 seconds
+  setInterval(()=>{
+    console.log('🔄 Auto-refreshing live data (60s)...');
+    location.reload();
+  }, 60000);
+</script>
 
-  } catch (e) {
-
-    console.error('❌ LeetCode fetch error:', e.message);
-
-    unameEl.textContent = '@Aryan1237 (Offline)';
-
-    solvedNum.textContent = '—';
-
-    // ⭐ ADDED THIS LINE
-    document.getElementById('lcTotalBig').textContent = '—';
-
-    document.getElementById('lcAcceptBig').textContent = '—';
-
-    ringFill.style.strokeDashoffset = CIRC - CIRC * 0.2;
-
-    document.getElementById('lcEasyVal').textContent = 'offline';
-    document.getElementById('lcMediumVal').textContent = '—';
-    document.getElementById('lcHardVal').textContent = '—';
-  }
-})();
-
-// Auto-refresh every 60 seconds
-setInterval(() => {
-  console.log('🔄 Auto-refreshing live data (60s)...');
-  location.reload();
-}, 60000);
+</body>
+</html>
